@@ -1,0 +1,7 @@
+.vagrant
+.coverage
+.tox
+cookbooks
+Berksfile.lock
+*.pyc
+*.egg-info

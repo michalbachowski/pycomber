@@ -1,0 +1,8 @@
+# Test coverage configuration.
+
+[run]
+branch = True
+omit =
+    */.tox/*
+    */test/*
+    */dist-packages/*
