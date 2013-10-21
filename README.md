@@ -1,7 +1,7 @@
 pycomber
-=====
+========
 
-Python Configureable Object Merger
+Python Configurable Object Merger
 
 LICENSE
 -------
