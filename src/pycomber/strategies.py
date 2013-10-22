@@ -6,14 +6,14 @@ import itertools
 class MergeAbstract(object):
     """Abstract class to any Merge instance"""
 
-    def __init__(self, merger):
+    def __init__(self, manager):
         """Class initialization
 
         Arguments:
             :param    manager: merg manager instance
             :param    manager: pycomber.manager.Manager
         """
-        self._merger = merger
+        self._manager = manager
 
     def __call__(self, merge_from, merge_to):
         """Merges given objects
@@ -43,7 +43,7 @@ class MergeList(MergeAbstract):
             :type     merge_to: object
         :returns: object -- merged instances
         """
-        return map(self._merger, set(itertools.chain(merge_from, merge_to)))
+        return map(self._manager, set(itertools.chain(merge_from, merge_to)))
 
 
 class MergeListOverride(MergeList):
@@ -77,7 +77,7 @@ class MergeSet(MergeAbstract):
             :type     merge_to: object
         :returns: object -- merged instances
         """
-        return [self._merger(item) for item in merge_from | merge_to]
+        return [self._manager(item) for item in merge_from | merge_to]
 
 
 class MergeSetOverride(MergeSet):
@@ -130,7 +130,7 @@ class MergeDict(MergeAbstract):
             :type     merge_to: object
         :returns: iterator -- iterator with all values from both dict's
         """
-        return itertools.chain(merge_from.iteritems(), merge_to.iteritems())
+        return itertools.chain(merge_from.items(), merge_to.items())
 
     def _sorted(self, chained_dicts):
         """Sorts list of (key, value) pairs
@@ -161,7 +161,7 @@ class MergeDict(MergeAbstract):
             :param    group_items: iterator
         :returns: list
         """
-        return list(itertools.imap(lambda i: i[1], group_items))
+        return list(map(lambda i: i[1], group_items))
 
     def _merge_values(self, group_values):
         """Performs actual merge
@@ -171,7 +171,7 @@ class MergeDict(MergeAbstract):
             :param    group_values: list
         :returns: object
         """
-        return self._merger(*group_values)
+        return self._manager(*group_values)
 
 
 class MergeDictOverride(MergeDict):
@@ -186,7 +186,7 @@ class MergeDictOverride(MergeDict):
             :param    group_values: list
         :returns: object
         """
-        return self._merger(group_values[0])
+        return self._manager(group_values[0])
 
 
 class MergePrimitives(MergeAbstract):

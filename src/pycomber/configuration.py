@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from types import NoneType
 from pycomber.value_objects import ImmutableDict
-from pycomber.strategies import MergeList, MergeDict, MergeSet, \
-        MergePrimitives, MergeNone
+from pycomber.strategies import MergeList, MergeDict, MergeSet, MergePrimitives
 
 
 class ConfigurationAbstract(object):
@@ -48,18 +46,15 @@ class ConfigurationDefault(ConfigurationAbstract):
             :type     merger: pycomber.manager.Manager
         :returns: None
         """
+        NoneType = type(None)
         # complex types
         merger.set_strategy(MergeList(merger), list)
         merger.set_strategy(MergeDict(merger), dict)
         merger.set_strategy(MergeSet(merger), set)
         # primitives
         merger.set_strategy(MergePrimitives(merger), \
-                (str, int, float, long, complex, bool))
-        # None
-        merger.set_strategy(MergeNone(merger), NoneType, \
-            (NoneType, str, int, float, long, complex, bool, list, dict, set))
-        merger.set_strategy(MergeNone(merger), \
-            (str, int, float, long, complex, bool, list, dict, set), NoneType)
+                (str, int, float, complex, bool, NoneType))
+
         # factory for NoneTypes
         merger.set_factory(NoneType, self._none)
 
