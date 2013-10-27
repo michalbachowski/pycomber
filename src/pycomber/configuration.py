@@ -42,8 +42,39 @@ class ConfigurationAggregate(ConfigurationAbstract):
         [c(manager) for c in self._inner]
 
 
-class ConfigurationDefault(ConfigurationAbstract):
-    """Default configuration for merge Manager"""
+class ConfigurationComplex(ConfigurationAbstract):
+    """Configures manager to merge complex types (dict, list, set)"""
+
+    def __call__(self, manager):
+        """Performs configuration for given manager instance
+
+        Arguments:
+            :param    manager: merge manager instance to be configured
+            :type     manager: pycomber.manager.Manager
+        :returns: None
+        """
+        manager.set_strategy(MergeList(manager), list)
+        manager.set_strategy(MergeDict(manager), dict)
+        manager.set_strategy(MergeSet(manager), set)
+
+
+class ConfigurationPrimitives(ConfigurationAbstract):
+    """Configures manager to merge primitives (str, int, float, complex, bool)"""
+
+    def __call__(self, manager):
+        """Performs configuration for given manager instance
+
+        Arguments:
+            :param    manager: merge manager instance to be configured
+            :type     manager: pycomber.manager.Manager
+        :returns: None
+        """
+        manager.set_strategy(MergePrimitives(manager), \
+                (str, int, float, complex, bool))
+
+
+class ConfigurationNoneType(ConfigurationAbstract):
+    """Configures manager to merge to/from NoneType"""
 
     def __call__(self, manager):
         """Performs configuration for given manager instance
@@ -54,13 +85,10 @@ class ConfigurationDefault(ConfigurationAbstract):
         :returns: None
         """
         NoneType = type(None)
-        # complex types
-        manager.set_strategy(MergeList(manager), list)
-        manager.set_strategy(MergeDict(manager), dict)
-        manager.set_strategy(MergeSet(manager), set)
-        # primitives
-        manager.set_strategy(MergePrimitives(manager), \
-                (str, int, float, complex, bool, NoneType))
+        manager.set_strategy(MergePrimitives(manager), NoneType,
+                (str, int, float, complex, bool))
+        manager.set_strategy(MergePrimitives(manager),
+                (str, int, float, complex, bool), NoneType)
 
         # factory for NoneTypes
         manager.set_factory(NoneType, self._none)
