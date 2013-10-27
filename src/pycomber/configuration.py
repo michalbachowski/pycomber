@@ -7,12 +7,12 @@ from pycomber.strategies import MergeList, MergeDict, MergeSet, MergePrimitives
 class ConfigurationAbstract(object):
     """Abstract class for every configuration instance"""
 
-    def __call__(self, merger):
-        """Performs configuration for given merger instance
+    def __call__(self, manager):
+        """Performs configuration for given manager instance
 
         Arguments:
-            :param    merger: merge manager instance to be configured
-            :type     merger: pycomber.manager.Manager
+            :param    manager: merge manager instance to be configured
+            :type     manager: pycomber.manager.Manager
         :returns: None
         :raises: NotImplementedError
         """
@@ -20,43 +20,50 @@ class ConfigurationAbstract(object):
 
 
 class ConfigurationAggregate(ConfigurationAbstract):
+    """Configuration object that aggregates other configurations"""
 
     def __init__(self, *args):
-        self._inner = args
-
-    def __call__(self, merger):
-        """Performs configuration for given merger instance
+        """Object constructor
 
         Arguments:
-            :param    merger: merge manager instance to be configured
-            :type     merger: pycomber.manager.Manager
+            :param  *args: inner configuration instances to be aggregated
+            :type   *args: set
+        """
+        self._inner = args
+
+    def __call__(self, manager):
+        """Performs configuration for given manager instance
+
+        Arguments:
+            :param    manager: merge manager instance to be configured
+            :type     manager: pycomber.manager.Manager
         :returns: None
         """
-        [c(merger) for c in self._inner]
+        [c(manager) for c in self._inner]
 
 
 class ConfigurationDefault(ConfigurationAbstract):
     """Default configuration for merge Manager"""
 
-    def __call__(self, merger):
-        """Performs configuration for given merger instance
+    def __call__(self, manager):
+        """Performs configuration for given manager instance
 
         Arguments:
-            :param    merger: merge manager instance to be configured
-            :type     merger: pycomber.manager.Manager
+            :param    manager: merge manager instance to be configured
+            :type     manager: pycomber.manager.Manager
         :returns: None
         """
         NoneType = type(None)
         # complex types
-        merger.set_strategy(MergeList(merger), list)
-        merger.set_strategy(MergeDict(merger), dict)
-        merger.set_strategy(MergeSet(merger), set)
+        manager.set_strategy(MergeList(manager), list)
+        manager.set_strategy(MergeDict(manager), dict)
+        manager.set_strategy(MergeSet(manager), set)
         # primitives
-        merger.set_strategy(MergePrimitives(merger), \
+        manager.set_strategy(MergePrimitives(manager), \
                 (str, int, float, complex, bool, NoneType))
 
         # factory for NoneTypes
-        merger.set_factory(NoneType, self._none)
+        manager.set_factory(NoneType, self._none)
 
     def _none(self, val):
         """Helper function that returns None
@@ -67,16 +74,16 @@ class ConfigurationDefault(ConfigurationAbstract):
 
 
 class ConfigurationImmutable(ConfigurationAbstract):
-    """Configures merger to produce immutable instances of input objects"""
+    """Configures manager to produce immutable instances of input objects"""
 
-    def __call__(self, merger):
-        """Performs configuration for given merger instance
+    def __call__(self, manager):
+        """Performs configuration for given manager instance
 
         Arguments:
-            :param    merger: merge manager instance to be configured
-            :type     merger: pycomber.manager.Manager
+            :param    manager: merge manager instance to be configured
+            :type     manager: pycomber.manager.Manager
         :returns: None
         """
-        merger.set_factory(list, tuple)
-        merger.set_factory(dict, ImmutableDict)
-        merger.set_factory(set, frozenset)
+        manager.set_factory(list, tuple)
+        manager.set_factory(dict, ImmutableDict)
+        manager.set_factory(set, frozenset)
