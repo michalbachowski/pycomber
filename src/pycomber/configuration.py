@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from pycomber.value_objects import ImmutableDict
-from pycomber.strategies import MergeList, MergeDict, MergeSet, MergePrimitives
+from pycomber.strategies import MergeList, MergeDict, MergeSet, MergeTuple, \
+        MergePrimitives
 
 
 class ConfigurationAbstract(object):
@@ -56,6 +57,7 @@ class ConfigurationComplex(ConfigurationAbstract):
         manager.set_strategy(MergeList(manager), list)
         manager.set_strategy(MergeDict(manager), dict)
         manager.set_strategy(MergeSet(manager), set)
+        manager.set_strategy(MergeTuple(manager), tuple)
 
 
 class ConfigurationPrimitives(ConfigurationAbstract):
