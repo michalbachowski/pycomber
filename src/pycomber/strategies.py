@@ -97,6 +97,40 @@ class MergeListOverride(MergeList):
         return MergeList.__call__(self, merge_from, [])
 
 
+class MergeTuple(MergeAbstract):
+    """Merger for tuple type. Joins two tuples together.
+    Recursively applies merge to all values"""
+
+    def __call__(self, merge_from, merge_to):
+        """Merges given tuples
+
+        Arguments:
+            :param    merge_from: merge from this tuple
+            :type     merge_from: tuple
+            :param    merge_to: merge to this tuple
+            :type     merge_to: tuple
+        :returns: tuple -- merged instances
+        """
+        return tuple(mapper(self._manager, set(merge_from, merge_to)))
+
+
+class MergeTupleOverride(MergeTuple):
+    """Merger for tuple type. Overrides merge_to with merge_from.
+    Recursively applies merge to all values"""
+
+    def __call__(self, merge_from, merge_to):
+        """Merges given tuples
+
+        Arguments:
+            :param    merge_from: merge from this tuple
+            :type     merge_from: tuple
+            :param    merge_to: merge to this tuple
+            :type     merge_to: tuple
+        :returns: tuple -- merged instances
+        """
+        return MergeTuple.__call__(self, merge_from, tuple())
+
+
 class MergeSet(MergeAbstract):
     """Merger for set type. Joins two sets together
     Recursively applies merge to all values"""
