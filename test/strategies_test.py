@@ -18,8 +18,8 @@ from testutils import mock
 # content bits modules
 #
 from pycomber.strategies import MergeAbstract, MergeList, MergeListOverride, \
-    MergeSet, MergeSetOverride, MergeDict, MergeDictOverride, MergePrimitives, \
-    MergeNone
+    MergeSet, MergeSetOverride, MergeTuple, MergeTupleOverride, MergeDict, \
+    MergeDictOverride, MergePrimitives, MergeNone
 
 
 class MergeTestMixin(object):
@@ -133,6 +133,66 @@ class MergeListOverrideTestCase(unittest.TestCase, MergeTestMixin):
         d = {'a': 1}
         list(self.merger([1, 2, d], [2, 3]))
         self.assertEqual(self.manager.call_count, 3)
+
+
+class MergeSetTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeSet
+        MergeTestMixin.setUp(self)
+
+    def test_merge_generates_union_of_two_sets(self):
+        self.assertEqual(self.merger(set([1, 2]), set([2, 3])), set([1, 2, 3]))
+        self.assertEqual(self.merger(set([1, 2]), set([3])), set([1, 2, 3]))
+
+    def test_calls_merge_manager_for_each_key(self):
+        self.merger(set([1, 2]), set([2, 3]))
+        self.assertEqual(self.manager.call_count, 3)
+
+
+class MergeSetOverrideTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeSetOverride
+        MergeTestMixin.setUp(self)
+
+    def test_merge_overrides_second_set_with_first_one(self):
+        self.assertEqual(self.merger(set([1, 2]), set([2, 3])), set([1, 2]))
+        self.assertEqual(self.merger(set([1, 2]), set([3])), set([1, 2]))
+
+    def test_calls_merge_manager_for_each_key(self):
+        self.merger(set([1, 2]), set([2, 3]))
+        self.assertEqual(self.manager.call_count, 2)
+
+
+class MergeTupleTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeTuple
+        MergeTestMixin.setUp(self)
+
+    def test_merge_generates_union_of_two_tuples(self):
+        self.assertEqual(self.merger((1, 2), (2, 3)), (1, 2, 3))
+        self.assertEqual(self.merger((1, 2), (3,)), (1, 2, 3))
+
+    def test_calls_merge_manager_for_each_key(self):
+        self.merger((1, 2), (2, 3))
+        self.assertEqual(self.manager.call_count, 3)
+
+
+class MergeTupleOverrideTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeTupleOverride
+        MergeTestMixin.setUp(self)
+
+    def test_merge_overrides_second_tuple_with_first_one(self):
+        self.assertEqual(self.merger((1, 2), (2, 3)), (1, 2))
+        self.assertEqual(self.merger((1, 2), (3,)), (1, 2))
+
+    def test_calls_merge_manager_for_each_key(self):
+        self.merger((1, 2), (2, 3))
+        self.assertEqual(self.manager.call_count, 2)
 
 
 class MergeDictTestCase(unittest.TestCase, MergeTestMixin):
