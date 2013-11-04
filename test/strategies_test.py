@@ -46,8 +46,8 @@ class MergeTestMixin(object):
         err=False
         try:
             self.merger(None, None)
-        except TypeError:
-            err=True
+        except TypeError, e:
+            err='takes exactly ' in e.args[0]
         except:
             pass
         self.assertFalse(err)
