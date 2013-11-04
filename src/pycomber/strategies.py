@@ -201,15 +201,8 @@ class MergeDictOverride(MergeDict):
     """Merger for dict type. Overrides merge_to with merge_from.
     Recursively applies merge to all values"""
 
-    def _merge_values(self, group_values):
-        """Performs actual merge
-
-        Arguments:
-            :param    group_values: list of values in common (1 or 2 elements)
-            :param    group_values: list
-        :returns: object
-        """
-        return self._manager(group_values[0])
+    def __call__(self, merge_from, merge_to):
+        return MergeDict.__call__(self, merge_from, {})
 
 
 class MergePrimitives(MergeAbstract):
