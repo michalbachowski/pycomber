@@ -4,6 +4,13 @@ import itertools
 import operator
 
 
+# Python 2to3 support
+try:
+    mapper = itertools.imap
+except AttributeError:
+    mapper = map
+
+
 class MergeAbstract(object):
     """Abstract class to any Merge instance"""
 
@@ -44,7 +51,7 @@ class MergeList(MergeAbstract):
             :type     merge_to: object
         :returns: object -- merged instances
         """
-        return map(self._manager, self._unique(sorted(itertools.chain(\
+        return mapper(self._manager, self._unique(sorted(itertools.chain(\
                                                         merge_from, merge_to))))
 
     def _key_func(self, item):
@@ -69,7 +76,7 @@ class MergeList(MergeAbstract):
             :type     iterable: iterable
         :returns: iterable
         :raises: TypeError"""
-        return itertools.imap(next, itertools.imap(operator.itemgetter(1), \
+        return mapper(next, mapper(operator.itemgetter(1), \
                                 itertools.groupby(iterable, self._key_func)))
 
 
@@ -177,7 +184,7 @@ class MergeDict(MergeAbstract):
             :param    group_items: iterator
         :returns: list
         """
-        return list(map(lambda i: i[1], group_items))
+        return mapper(operator.itemgetter(1), group_items)
 
     def _merge_values(self, group_values):
         """Performs actual merge
