@@ -132,18 +132,18 @@ class MergeTupleOverride(MergeTuple):
 
 
 class MergeSet(MergeAbstract):
-    """Merger for set type. Joins two sets together
+    """Merger for set type. Joins two sets together.
     Recursively applies merge to all values"""
 
     def __call__(self, merge_from, merge_to):
-        """Merges given objects
+        """Merges given sets
 
         Arguments:
-            :param    merge_from: merge from this object
-            :type     merge_from: object
-            :param    merge_to: merge to this object
-            :type     merge_to: object
-        :returns: object -- merged instances
+            :param    merge_from: merge from this set
+            :type     merge_from: set
+            :param    merge_to: merge to this set
+            :type     merge_to: set
+        :returns: set -- merged instances
         """
         return set([self._manager(item) for item in merge_from | merge_to])
 
@@ -153,6 +153,15 @@ class MergeSetOverride(MergeSet):
     Recursively applies merge to all values"""
 
     def __call__(self, merge_from, merge_to):
+        """Merges given sets
+
+        Arguments:
+            :param    merge_from: merge from this set
+            :type     merge_from: set
+            :param    merge_to: merge to this set
+            :type     merge_to: set
+        :returns: set -- merged instances
+        """
         return MergeSet.__call__(self, merge_from, set())
 
 
@@ -161,14 +170,14 @@ class MergeDict(MergeAbstract):
     Recursively merges all keys in common."""
 
     def __call__(self, merge_from, merge_to):
-        """Merges given objects
+        """Merges given dicts
 
         Arguments:
-            :param    merge_from: merge from this object
-            :type     merge_from: object
-            :param    merge_to: merge to this object
-            :type     merge_to: object
-        :returns: object -- merged instances
+            :param    merge_from: merge from this dict
+            :type     merge_from: dict
+            :param    merge_to: merge to this dict
+            :type     merge_to: dict
+        :returns: dict -- merged instances
         """
         out = {}
         for (group_key, group_items) in self._grouped(self._sorted(\
@@ -181,10 +190,10 @@ class MergeDict(MergeAbstract):
         """Chains list of (key, value) pairs from given dictionaries
 
         Arguments:
-            :param    merge_from: merge from this object
-            :type     merge_from: object
-            :param    merge_to: merge to this object
-            :type     merge_to: object
+            :param    merge_from: merge from this dict
+            :type     merge_from: dict
+            :param    merge_to: merge to this dict
+            :type     merge_to: dict
         :returns: iterator -- iterator with all values from both dict's
         """
         return itertools.chain(merge_from.items(), merge_to.items())
@@ -240,14 +249,15 @@ class MergeDictOverride(MergeDict):
 
 
 class MergePrimitives(MergeAbstract):
+    """Merger for primitives. Always returns merge_from"""
 
     def __call__(self, merge_from, merge_to):
-        """Merges given objects
+        """Merges given primitives
 
         Arguments:
-            :param    merge_from: merge from this object
+            :param    merge_from: merge from this primitive
             :type     merge_from: object
-            :param    merge_to: merge to this object
+            :param    merge_to: merge to this primitive
             :type     merge_to: object
         :returns: object -- merged instances
         """
@@ -255,6 +265,7 @@ class MergePrimitives(MergeAbstract):
 
 
 class MergeNone(MergeAbstract):
+    """Merger for NoneType. Returns first non-None value"""
 
     def __call__(self, merge_from, merge_to):
         """Merges given objects
