@@ -90,6 +90,91 @@ class MergePrimitivesTestCase(unittest.TestCase, MergeTestMixin):
         self.assertEqual(self.merger(None, None), None)
 
 
+class MergeListTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeList
+        MergeTestMixin.setUp(self)
+
+    def test_merge_generates_union_of_two_list(self):
+        self.assertEqual(list(self.merger([1], [2])), [1, 2])
+
+    def test_merge_returns_unique_values(self):
+        self.assertEqual(list(self.merger([1, 2], [2, 3])), [1, 2, 3])
+        d = {'a': 1}
+        self.assertEqual(list(self.merger([1, d], [d, 2])), [1, 2, d])
+        self.assertEqual(list(self.merger([1, 2, d], [d, 2])), [1, 2, d])
+
+    def test_calls_merge_manager_for_each_value(self):
+        d = {'a': 1}
+        list(self.merger([1, 2, d], [2, 3]))
+        self.assertEqual(self.manager.call_count, 4)
+
+
+class MergeListOverrideTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeListOverride
+        MergeTestMixin.setUp(self)
+
+    def test_merge_returns_generator(self):
+        self.assertFalse(isinstance(self.merger([1,2], [3]), list))
+
+    def test_merge_overrides_second_list_with_items_from_first_one(self):
+        self.assertEqual(list(self.merger([1], [2])), [1])
+
+    def test_merge_returns_unique_values(self):
+        self.assertEqual(list(self.merger([1, 2, 2], [2, 3])), [1, 2])
+        d = {'a': 1}
+        self.assertEqual(list(self.merger([1, d, d], [d, 2])), [1, d])
+        self.assertEqual(list(self.merger([1, 2, d, 2, d], [d, 3])), [1, 2, d])
+
+    def test_calls_merge_manager_for_each_value(self):
+        d = {'a': 1}
+        list(self.merger([1, 2, d], [2, 3]))
+        self.assertEqual(self.manager.call_count, 3)
+
+
+class MergeDictTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeDict
+        MergeTestMixin.setUp(self)
+
+    def test_merge_generates_union_of_two_dicts(self):
+        self.assertEqual(self.merger({'a': 1}, {'b': 1}), {'a': 1, 'b': 1})
+        self.assertEqual(self.merger({'a': 1}, {'a': 2}), {'a': 1})
+
+    def test_merge_of_values_depends_on_merge_manager_configuration(self):
+        self.assertEqual(self.merger({'a': 1}, {'a': 2}), {'a': 1})
+        self.manager.side_effect = lambda a, b: b
+        self.assertEqual(self.merger({'a': 1}, {'a': 2}), {'a': 2})
+
+    def test_calls_merge_manager_for_each_key(self):
+        self.merger({'a': 1}, {'a': 2})
+        self.assertEqual(self.manager.call_count, 1)
+        self.manager.reset_mock()
+        self.merger({'a': 1}, {'b': 2})
+        self.assertEqual(self.manager.call_count, 2)
+
+
+class MergeDictOverrideTestCase(unittest.TestCase, MergeTestMixin):
+
+    def setUp(self):
+        self.merger_class = MergeDictOverride
+        MergeTestMixin.setUp(self)
+
+    def test_merge_overrides_values_from_second_dict_with_first_one(self):
+        self.assertEqual(self.merger({'c': 3}, {'d': 4}), {'c': 3})
+        self.assertEqual(self.merger({'a': 1}, {'a': 2}), {'a': 1})
+
+    def test_calls_merge_manager_for_each_key(self):
+        self.merger({'a': 1}, {'a': 2})
+        self.assertEqual(self.manager.call_count, 1)
+        self.manager.reset_mock()
+        self.merger({'a': 1}, {'b': 2})
+        self.assertEqual(self.manager.call_count, 1)
+
 
 
 if "__main__" == __name__:
