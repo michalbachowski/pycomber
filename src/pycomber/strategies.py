@@ -136,17 +136,6 @@ class MergeDict(MergeAbstract):
             out[group_key] = self._merge_values(group_values)
         return out
 
-    def _key_func(self, items):
-        """Function that fetches key for given (key, value) pair
-
-        Arguments:
-            :param    items: list with (key, value) pair from dict
-            :param    items: list
-        :returns: object
-        :raises: IndexError
-        """
-        return items[0]
-
     def _chained(self, merge_from, merge_to):
         """Chains list of (key, value) pairs from given dictionaries
 
@@ -167,7 +156,7 @@ class MergeDict(MergeAbstract):
             :type     chained_dicts: iterator
         :returns: iterator
         """
-        return sorted(chained_dicts, key=self._key_func)
+        return sorted(chained_dicts, key=operator.itemgetter(0))
 
     def _grouped(self, sorted_dicts):
         """Groups list of (key, value) pairs
@@ -177,7 +166,7 @@ class MergeDict(MergeAbstract):
             :type     sorted_dicts: iterator
         :returns: iterator
         """
-        return itertools.groupby(sorted_dicts, key=self._key_func)
+        return itertools.groupby(sorted_dicts, key=operator.itemgetter(0))
 
     def _extract_values_for_groups(self, group_items):
         """Extracts values from list of grouped data from dict.
