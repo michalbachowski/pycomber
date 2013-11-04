@@ -111,7 +111,7 @@ class MergeSet(MergeAbstract):
             :type     merge_to: object
         :returns: object -- merged instances
         """
-        return [self._manager(item) for item in merge_from | merge_to]
+        return set([self._manager(item) for item in merge_from | merge_to])
 
 
 class MergeSetOverride(MergeSet):
