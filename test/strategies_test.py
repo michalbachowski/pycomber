@@ -25,7 +25,7 @@ from pycomber.strategies import MergeAbstract, MergeList, MergeListOverride, \
 class MergeTestMixin(object):
 
     def setUp(self):
-        self.manager = mock.Mock()
+        self.manager = mock.Mock(side_effect = lambda a, b=None: a)
         self.merger = self.merger_class(self.manager)
 
     def test_init_requires_one_argument(self):
