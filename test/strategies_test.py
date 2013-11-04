@@ -236,14 +236,5 @@ class MergeDictOverrideTestCase(unittest.TestCase, MergeTestMixin):
         self.assertEqual(self.manager.call_count, 1)
 
 
-
 if "__main__" == __name__:
     unittest.main()
-
-
-def a():
-    import merger
-
-    a = {'a': 1, 'b': 2, 'c': [3, 33]}
-    b = {'b': 22, 'c': [33, 34], 'd': None}
-    print merger.MergerImmutable().merge(a, b)
