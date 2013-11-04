@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import itertools
+import operator
 
 
 class MergeAbstract(object):
@@ -43,7 +44,33 @@ class MergeList(MergeAbstract):
             :type     merge_to: object
         :returns: object -- merged instances
         """
-        return map(self._manager, set(itertools.chain(merge_from, merge_to)))
+        return map(self._manager, self._unique(sorted(itertools.chain(\
+                                                        merge_from, merge_to))))
+
+    def _key_func(self, item):
+        """Function that fetches key for given item
+
+        Arguments:
+            :param    items: item to generate key for
+            :type     items: list
+        :returns: object
+        :raises: IndexError
+        """
+        try:
+            return hash(item)
+        except TypeError:
+            return frozenset(iter(item))
+
+    def _unique(self, iterable):
+        """Returns unique values from dict
+
+        Arguments:
+            :param    iterable: iterable to remove duplicates from
+            :type     iterable: iterable
+        :returns: iterable
+        :raises: TypeError"""
+        return itertools.imap(next, itertools.imap(operator.itemgetter(1), \
+                                itertools.groupby(iterable, self._key_func)))
 
 
 class MergeListOverride(MergeList):
