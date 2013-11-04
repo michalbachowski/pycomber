@@ -70,7 +70,7 @@ class ConfigurationPrimitives(ConfigurationAbstract):
         :returns: None
         """
         manager.set_strategy(MergePrimitives(manager), \
-                (str, int, float, complex, bool))
+                (str, int, float, complex, bool, type(None)))
 
 
 class ConfigurationNoneType(ConfigurationAbstract):
