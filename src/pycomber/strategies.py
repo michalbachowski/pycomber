@@ -111,7 +111,7 @@ class MergeTuple(MergeAbstract):
             :type     merge_to: tuple
         :returns: tuple -- merged instances
         """
-        return tuple(mapper(self._manager, set(merge_from, merge_to)))
+        return tuple(mapper(self._manager, set(merge_from + merge_to)))
 
 
 class MergeTupleOverride(MergeTuple):
