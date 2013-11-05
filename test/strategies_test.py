@@ -15,7 +15,7 @@ from testutils import mock
 
 
 ##
-# content bits modules
+# pycomber modules
 #
 from pycomber.strategies import MergeAbstract, MergeList, MergeListOverride, \
     MergeSet, MergeSetOverride, MergeTuple, MergeTupleOverride, MergeDict, \

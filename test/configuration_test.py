@@ -12,7 +12,7 @@ from testutils import mock, IsA, IsCallable
 
 
 ##
-# content bits modules
+# pycomber modules
 #
 from pycomber.strategies import MergeAbstract
 from pycomber.configuration import ConfigurationAbstract, \

@@ -8,7 +8,7 @@ import unittest
 from functools import partial
 
 ##
-# content bits modules
+# pycomber modules
 #
 from pycomber.manager import Manager
 
