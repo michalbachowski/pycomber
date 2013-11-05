@@ -8,6 +8,11 @@ import unittest
 from functools import partial
 
 ##
+# test helpers
+#
+from testutils import mock
+
+##
 # pycomber modules
 #
 from pycomber.manager import Manager
@@ -145,6 +150,41 @@ class ManagerTestCase(unittest.TestCase):
 
         self.manager.set_strategy(lambda a, b, c: 1, str, str)
         self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
+    def test_call_expects_2_arguments(self):
+        self.assertRaises(TypeError, self.manager)
+        self.assertRaises(TypeError, partial(self.manager, None))
+        self.assertRaises(TypeError, partial(self.manager, None, None, None))
+        err = False
+        try:
+            self.manager(None, None)
+        except TypeError, e:
+            err = 'expected at least' in e
+        self.assertFalse(err)
+
+    def test_call_expects_configured_strategy_for_merging(self):
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+        self.manager.set_strategy(lambda a, b: a, str, str)
+        err = False
+        try:
+            self.manager('a', 'b')
+        except TypeError:
+            err = True
+        self.assertFalse(err)
+
+    def test_call_picks_strategies_for_given_type(self):
+        s = mock.Mock(return_value='a')
+        self.manager.set_strategy(s, str, str)
+        self.assertEqual(self.manager('b', 'c'), 'a')
+        s.assert_called_once_with('b', 'c')
+
+    def test_call_picks_factory_for_given_value_returned_from_strategy(self):
+        s = mock.Mock(return_value=1)
+        f = mock.Mock(return_value='g')
+        self.manager.set_strategy(s, str, str)
+        self.manager.set_factory(int, f)
+        self.assertEqual(self.manager('b', 'c'), 'g')
+        f.assert_called_once_with(1)
 
 
 if "__main__" == __name__:
