@@ -36,10 +36,7 @@ class ManagerTestCase(unittest.TestCase):
             err = 'expected at least' in e
         self.assertFalse(err)
 
-    def test_set_factory_requires_existing_strategy_for_given_base_type(self):
-        self.assertRaises(TypeError, partial(self.manager.set_factory, int, \
-                                                                        None))
-        self.manager.set_strategy(None, int, None)
+    def test_set_factory_allows_to_set_factory(self):
         err = False
         try:
             self.manager.set_factory(int, None)

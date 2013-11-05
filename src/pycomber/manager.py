@@ -24,9 +24,6 @@ class Manager(MergeAbstract):
         :returns: Manager -- instance of Manager class (self)
         :raises:  TypeError
         """
-        if base_type not in self._strategies:
-            raise TypeError("%s must be one of default base type: %s" % \
-                    (base_type, self._strategies.keys()))
         self._factories[base_type] = factory
         return self
 
