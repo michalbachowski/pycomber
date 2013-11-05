@@ -38,7 +38,7 @@ class ManagerTestCase(unittest.TestCase):
         try:
             self.manager.set_factory(None, None)
         except TypeError, e:
-            err = 'expected at least' in e
+            err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
     def test_set_factory_allows_to_set_factory(self):
@@ -92,7 +92,7 @@ class ManagerTestCase(unittest.TestCase):
         try:
             self.manager.set_strategy(None, None)
         except TypeError, e:
-            err = 'expected at least' in e
+            err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
     def test_set_strategy_allows_3_arguments(self):
@@ -100,7 +100,7 @@ class ManagerTestCase(unittest.TestCase):
         try:
             self.manager.set_strategy(None, None, None)
         except TypeError, e:
-            err = 'expected at least' in e
+            err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
     def test_set_strategy_for_single_types_makes_one_pair(self):
@@ -151,16 +151,34 @@ class ManagerTestCase(unittest.TestCase):
         self.manager.set_strategy(lambda a, b, c: 1, str, str)
         self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
 
-    def test_call_expects_2_arguments(self):
-        self.assertRaises(TypeError, self.manager)
-        self.assertRaises(TypeError, partial(self.manager, None))
-        self.assertRaises(TypeError, partial(self.manager, None, None, None))
+    def test_call_expects_no_arguments_but_allows_two(self):
+        err = False
+        try:
+            self.manager()
+        except TypeError, e:
+            err = 'expected at least' in e.args[0]
+        self.assertFalse(err)
+
+        try:
+            self.manager(None)
+        except TypeError, e:
+            err = 'expected at least' in e.args[0]
+        self.assertFalse(err)
+
         err = False
         try:
             self.manager(None, None)
         except TypeError, e:
-            err = 'expected at least' in e
+            err = 'expected at least' in e.args[0]
         self.assertFalse(err)
+
+        err = False
+        try:
+            self.manager(None, None, None)
+        except TypeError, e:
+            err = 'takes at most' in e.args[0]
+        self.assertTrue(err)
+
 
     def test_call_expects_configured_strategy_for_merging(self):
         self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
