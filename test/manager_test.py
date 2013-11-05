@@ -56,6 +56,28 @@ class ManagerTestCase(unittest.TestCase):
         self.manager.set_factory(int, 'a')
         self.assertEqual(self.manager.get_factory(int), 'a')
 
+    def test_factory_must_be_callable(self):
+        self.manager.set_strategy(lambda a, b: a, str, str)
+        self.manager.set_factory(str, 'a')
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
+    def test_factory_must_accept_2_arguments(self):
+        self.manager.set_strategy(lambda a, b: a, str, str)
+
+        self.manager.set_factory(str, lambda: 1)
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
+        self.manager.set_factory(str, lambda a: 1)
+        err = False
+        try:
+            self.manager('a', 'b')
+        except TypeError:
+            err = True
+        self.assertFalse(err)
+
+        self.manager.set_factory(str,lambda a, b: 1)
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
     def test_set_strategy_expects_2_arguments(self):
         self.assertRaises(TypeError, self.manager.set_strategy)
         self.assertRaises(TypeError, partial(self.manager.set_strategy, None))
@@ -101,6 +123,28 @@ class ManagerTestCase(unittest.TestCase):
         self.manager.set_strategy('strategy', 'ab', 'cd')
         for a, b in (('a', 'c'), ('a', 'd'), ('b', 'c'), ('b', 'd')):
             self.assertEqual(self.manager.get_strategy(a, b), 'strategy')
+
+    def test_strategy_must_be_callable(self):
+        self.manager.set_strategy('a', str, str)
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
+    def test_strategy_must_accept_2_arguments(self):
+        self.manager.set_strategy(lambda: 1, str, str)
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
+        self.manager.set_strategy(lambda a: 1, str, str)
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
+
+        self.manager.set_strategy(lambda a, b: 1, str, str)
+        err = False
+        try:
+            self.manager('a', 'b')
+        except TypeError:
+            err = True
+        self.assertFalse(err)
+
+        self.manager.set_strategy(lambda a, b, c: 1, str, str)
+        self.assertRaises(TypeError, partial(self.manager, 'a', 'b'))
 
 
 if "__main__" == __name__:
