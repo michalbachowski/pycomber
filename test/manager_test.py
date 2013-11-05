@@ -37,7 +37,7 @@ class ManagerTestCase(unittest.TestCase):
         err = False
         try:
             self.manager.set_factory(None, None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
@@ -91,7 +91,7 @@ class ManagerTestCase(unittest.TestCase):
         err = False
         try:
             self.manager.set_strategy(None, None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
@@ -99,7 +99,7 @@ class ManagerTestCase(unittest.TestCase):
         err = False
         try:
             self.manager.set_strategy(None, None, None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
@@ -155,27 +155,27 @@ class ManagerTestCase(unittest.TestCase):
         err = False
         try:
             self.manager()
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
         try:
             self.manager(None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
         err = False
         try:
             self.manager(None, None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'expected at least' in e.args[0]
         self.assertFalse(err)
 
         err = False
         try:
             self.manager(None, None, None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err = 'takes at most' in e.args[0]
         self.assertTrue(err)
 

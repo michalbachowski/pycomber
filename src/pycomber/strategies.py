@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import itertools
 import operator
+import sys
 
 
 # Python 2to3 support
@@ -52,7 +53,36 @@ class MergeList(MergeAbstract):
         :returns: object -- merged instances
         """
         return mapper(self._manager, self._unique(sorted(itertools.chain(\
-                                                        merge_from, merge_to))))
+                                merge_from, merge_to), key=self._cmp_key)))
+
+    def _cmp_key(self, item):
+        """Prepares key for comparison purposes.
+        By default puts non-comparable items last
+
+        Arguments:
+            :param    item: item to generate key for
+            :type     item: object
+        :returns: int
+        """
+        if self._is_comparable(item):
+            return item
+        return sys.maxsize
+
+    def _is_comparable(self, item):
+        """Tellf whether given object is comparable
+
+        Arguments:
+            :param    item: item to check comparability
+            :type     item: object
+        :returns: bool
+        """
+        try:
+            if item < sys.maxsize:
+                pass
+            return True
+        except TypeError:
+            pass
+        return False
 
     def _key_func(self, item):
         """Function that fetches key for given item

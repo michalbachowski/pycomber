@@ -42,7 +42,7 @@ class ConfigurationTestMixin(object):
         err=False
         try:
             self.conf(None)
-        except TypeError, e:
+        except (TypeError,) as e:
             err='takes exactly ' in e.args[0]
         except:
             pass
