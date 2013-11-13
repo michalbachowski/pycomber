@@ -10,7 +10,7 @@ del os.link
 
 setup(name='PyComber',
     url='https://github.com/michalbachowski/pycomber',
-    version='0.1.0',
+    version='0.2.0',
     description='Python configurable object merger',
     license='MIT',
     author='Michał Bachowski',

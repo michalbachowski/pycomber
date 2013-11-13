@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from pycomber.value_objects import ImmutableDict
 from pycomber.strategies import MergeList, MergeDict, MergeSet, MergeTuple, \
-        MergePrimitives
+        MergePrimitives, MergeNone
 
 
 class ConfigurationAbstract(object):
@@ -91,6 +91,9 @@ class ConfigurationNoneType(ConfigurationAbstract):
                 (str, int, float, complex, bool))
         manager.set_strategy(MergePrimitives(manager),
                 (str, int, float, complex, bool), NoneType)
+        types = (list, dict, set, tuple, ImmutableDict, frozenset)
+        manager.set_strategy(MergeNone(manager), NoneType, types)
+        manager.set_strategy(MergeNone(manager), types, NoneType)
 
         # factory for NoneTypes
         manager.set_factory(NoneType, self._none)
